@@ -9,8 +9,7 @@ namespace Minimax.Components
 {
     public abstract class GameObject
     {
-        public void Update(GameTime gameTime) { }
-
+        public virtual void Update(GameTime gameTime) { }
         public virtual void Draw(SpriteBatch spriteBatch, GameTime gameTime) { }
     }
 }
