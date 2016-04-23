@@ -36,6 +36,6 @@ namespace Minimax.GameLogic
             spriteBatch.DrawString(ComponentLocator.FindFont("arial"), text, position, Color.Black);
         }
 
-        public Action Click;
+        public Action Click = () => { };
     }
 }
