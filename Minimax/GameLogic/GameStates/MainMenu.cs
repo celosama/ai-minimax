@@ -4,20 +4,32 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Minimax.Components;
+using Microsoft.Xna.Framework.Input;
 
 namespace Minimax.GameLogic.GameStates
 {
     public class MainMenu : State
     {
         Dictionary<string, GameObject> gameObjects;
+        MouseState lastMouseState;
 
         Button playerVsCpu, playerVsPlayer, difficulty;
 
-        public MainMenu()
+        public MainMenu(StateManager stateManager)
         {
             playerVsCpu = new Button(100, 100, "Player VS CPU");
             playerVsPlayer = new Button(100, 200, "Player VS Player");
             difficulty = new Button(100, 300, "Difficulty");
+
+            playerVsCpu.Click = () => {
+            };
+
+            playerVsPlayer.Click = () => {
+            };
+
+            difficulty.Click = () => {
+                stateManager.ChangeState(new NullState());
+            };
 
             gameObjects = new Dictionary<string, GameObject>() {
                 { "playerVsCpu", playerVsCpu },
@@ -28,6 +40,18 @@ namespace Minimax.GameLogic.GameStates
 
         public void Enter()
         {
+            lastMouseState = Mouse.GetState();
+
+            foreach (KeyValuePair<string, GameObject> button in gameObjects)
+            {
+                var b = button.Value;
+
+                if (b.GetType() == typeof(Button))
+                {
+                    Button reference = (Button)b;
+                    reference.CalculateArea();
+                }
+            }
         }
 
         public void Leave()
@@ -49,6 +73,30 @@ namespace Minimax.GameLogic.GameStates
                 entry.Value.Update(gameTime);
             }
 
+            HandleButtons(Mouse.GetState());
+        }
+
+        private void HandleButtons(MouseState mouseState)
+        {
+            MouseState currentMouseState = mouseState;
+
+            foreach (KeyValuePair<string, GameObject> gameObject in gameObjects)
+            {
+                var gameObj = gameObject.Value;
+
+                if (gameObj.GetType() == typeof(Button))
+                {
+                   if (lastMouseState.LeftButton == ButtonState.Released && currentMouseState.LeftButton == ButtonState.Pressed)
+                    {
+                        Button button = (Button)gameObj;
+
+                        if (button.GetArea().Contains(new Point(currentMouseState.X, currentMouseState.Y)))
+                            button.Click();
+                    }
+                }
+            }
+
+            lastMouseState = currentMouseState;
         }
     }
 }

@@ -28,9 +28,11 @@ namespace Minimax
             graphics.PreferredBackBufferWidth = 800;
             graphics.PreferredBackBufferHeight = 600;
 
+            IsMouseVisible = true;
+
             Content.RootDirectory = "Content";
 
-            stateManager = new StateManager(this, new MainMenu());
+            stateManager = new StateManager(this);
 
             button = new Button(0, 0, "Button1");
 
@@ -67,6 +69,8 @@ namespace Minimax
 
             ComponentLocator.RegisterTextures(textures);
             ComponentLocator.RegisterSpriteFonts(new Dictionary<string, SpriteFont>() { { "arial", font } });
+
+            stateManager.ChangeState(new MainMenu(stateManager));
         }
 
         protected override void UnloadContent()
