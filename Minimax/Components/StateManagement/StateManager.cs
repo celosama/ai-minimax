@@ -1,8 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Minimax.Components.StateManagement
 {
@@ -13,6 +10,11 @@ namespace Minimax.Components.StateManagement
         public StateManager(Game game, State state = null)
         {
             this.state = MakeState(state);
+        }
+
+        public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
+        {
+            state.Draw(spriteBatch, gameTime);
         }
 
         public void Update(GameTime gameTime)
@@ -30,7 +32,7 @@ namespace Minimax.Components.StateManagement
 
         public State GetState()
         {
-            return this.state;
+            return state;
         }
 
         private State MakeState(State state)

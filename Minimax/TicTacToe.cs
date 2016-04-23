@@ -2,7 +2,9 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Minimax.Components;
+using Minimax.Components.StateManagement;
 using Minimax.GameLogic;
+using Minimax.GameLogic.GameStates;
 using System.Collections.Generic;
 
 namespace Minimax
@@ -27,6 +29,8 @@ namespace Minimax
             graphics.PreferredBackBufferHeight = 600;
 
             Content.RootDirectory = "Content";
+
+            stateManager = new StateManager(this, new MainMenu());
 
             button = new Button(0, 0, "Button1");
 
@@ -74,6 +78,8 @@ namespace Minimax
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            stateManager.Update(gameTime);
+
             base.Update(gameTime);
         }
 
@@ -83,10 +89,7 @@ namespace Minimax
 
             spriteBatch.Begin();
 
-            foreach (KeyValuePair<string, GameObject> entry in gameObjects)
-            {
-                entry.Value.Draw(spriteBatch, gameTime);
-            }
+            stateManager.Draw(spriteBatch, gameTime);
 
             spriteBatch.End();
 
