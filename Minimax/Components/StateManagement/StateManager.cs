@@ -6,6 +6,7 @@ namespace Minimax.Components.StateManagement
     public class StateManager
     {
         State state;
+        bool hasCalledEnter = false;
 
         public StateManager(Game game, State state = null)
         {
@@ -19,6 +20,12 @@ namespace Minimax.Components.StateManagement
 
         public void Update(GameTime gameTime)
         {
+            if (!hasCalledEnter)
+            {
+                this.state.Enter();
+                hasCalledEnter = !hasCalledEnter;
+            }
+
             state.Update(gameTime);
         }
 
