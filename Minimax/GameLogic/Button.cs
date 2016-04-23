@@ -16,15 +16,26 @@ namespace Minimax.GameLogic
 
         public Button(int x, int y, string text)
         {
-            position = new Vector2(x, y);
-            area = new Rectangle(position.ToPoint(), new Point(100, 50));
-
             this.text = text;
+            position = new Vector2(x, y);
+        }
+
+        public void CalculateArea()
+        {
+            area = new Rectangle(position.ToPoint(), ComponentLocator.FindFont("arial").MeasureString(text).ToPoint());
+            Console.WriteLine(area);
+        }
+
+        public Rectangle GetArea()
+        {
+            return area;
         }
 
         public override void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
             spriteBatch.DrawString(ComponentLocator.FindFont("arial"), text, position, Color.Black);
         }
+
+        public Action Click;
     }
 }
