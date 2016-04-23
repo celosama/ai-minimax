@@ -10,6 +10,7 @@ namespace Minimax.Components
     {
         static Dictionary<string, GameObject> gameObjects;
         static Dictionary<string, Texture2D> textures;
+        static Dictionary<string, SpriteFont> fonts;
 
         public static void RegisterGameObjects(Dictionary<string, GameObject> gameObjects)
         {
@@ -19,6 +20,11 @@ namespace Minimax.Components
         public static void RegisterTextures(Dictionary<string, Texture2D> textures)
         {
             ComponentLocator.textures = textures;
+        }
+
+        public static void RegisterSpriteFonts(Dictionary<string, SpriteFont> fonts)
+        {
+            ComponentLocator.fonts = fonts;
         }
 
         public static Texture2D FindTexture(string identifier)
@@ -37,6 +43,15 @@ namespace Minimax.Components
             gameObjects.TryGetValue(identifier, out gameObject);
 
             return gameObject;
+        }
+
+        public static SpriteFont FindFont(string identifier)
+        {
+            SpriteFont font;
+
+            fonts.TryGetValue(identifier, out font);
+
+            return font;
         }
     }
 }

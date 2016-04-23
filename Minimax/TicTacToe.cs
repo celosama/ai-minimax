@@ -13,9 +13,12 @@ namespace Minimax
         SpriteBatch spriteBatch;
         Texture2D texX, texO, texReset;
         Button button;
+        SpriteFont font;
 
         Dictionary<string, GameObject> gameObjects;
         Dictionary<string, Texture2D> textures;
+
+        StateManager stateManager;
 
         public TicTacToe()
         {
@@ -44,6 +47,8 @@ namespace Minimax
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            font = Content.Load<SpriteFont>("arial");
+
             texX = Content.Load<Texture2D>("X");
             texO = Content.Load<Texture2D>("O");
             texReset = Content.Load<Texture2D>("Reset");
@@ -57,6 +62,7 @@ namespace Minimax
             };
 
             ComponentLocator.RegisterTextures(textures);
+            ComponentLocator.RegisterSpriteFonts(new Dictionary<string, SpriteFont>() { { "arial", font } });
         }
 
         protected override void UnloadContent()
