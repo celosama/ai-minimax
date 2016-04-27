@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Minimax.Components
@@ -11,6 +12,7 @@ namespace Minimax.Components
         static Dictionary<string, GameObject> gameObjects;
         static Dictionary<string, Texture2D> textures;
         static Dictionary<string, SpriteFont> fonts;
+        static GraphicsDeviceManager graphicsDeviceManager;
 
         public static void RegisterGameObjects(Dictionary<string, GameObject> gameObjects)
         {
@@ -25,6 +27,16 @@ namespace Minimax.Components
         public static void RegisterSpriteFonts(Dictionary<string, SpriteFont> fonts)
         {
             ComponentLocator.fonts = fonts;
+        }
+
+        public static void RegisterGraphicsDeviceManager(GraphicsDeviceManager graphics)
+        {
+            ComponentLocator.graphicsDeviceManager = graphics;
+        }
+
+        internal static GraphicsDeviceManager FindGraphicsDeviceManager()
+        {
+            return graphicsDeviceManager;
         }
 
         public static Texture2D FindTexture(string identifier)
