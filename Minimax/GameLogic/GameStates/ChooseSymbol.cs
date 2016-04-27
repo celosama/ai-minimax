@@ -1,42 +1,65 @@
 ﻿using Minimax.Components.StateManagement;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Minimax.Components;
 using Microsoft.Xna.Framework.Input;
+using Minimax.Components;
 
 namespace Minimax.GameLogic.GameStates
 {
-    public class MainMenu : State
+    public class ChooseSymbol : State
     {
+        State gameMode;
+
+        Button symbolX, symbolY, player1Symbol, play;
         Dictionary<string, GameObject> gameObjects;
         MouseState lastMouseState;
 
-        Button playerVsCpu, playerVsPlayer, difficulty;
-
-        public MainMenu(StateManager stateManager)
+        public ChooseSymbol(StateManager stateManager, State nextState)
         {
-            playerVsCpu = new Button(100, 100, "Player VS CPU");
-            playerVsPlayer = new Button(100, 200, "Player VS Player");
-            difficulty = new Button(100, 300, "Difficulty");
+            gameMode = nextState;
 
-            playerVsCpu.Click = () => {
-                stateManager.ChangeState(new ChooseSymbol(stateManager, new PlayerVsCpu(null)));
+            player1Symbol = new Button(100, 100, GetPlayer1Text());
+            symbolX = new Button(100, 150, "X");
+            symbolY = new Button(150, 150, "O");
+            play = new Button(100, 200, "Play");
+
+            symbolX.Click = () =>
+            {
+                GameSettings.Player1 = 'X';
+                GameSettings.Player2 = 'O';
             };
 
-            playerVsPlayer.Click = () => {
+            symbolY.Click = () =>
+            {
+                GameSettings.Player1 = 'O';
+                GameSettings.Player2 = 'X';
             };
 
-            difficulty.Click = () => {
-                stateManager.ChangeState(new NullState());
+            play.Click = () =>
+            {
+                State actualNextState = null;
+
+                if (nextState.GetType() == typeof(PlayerVsCpu))
+                    actualNextState = new PlayerVsCpu(stateManager);
+
+                stateManager.ChangeState(actualNextState);
             };
 
             gameObjects = new Dictionary<string, GameObject>() {
-                { "playerVsCpu", playerVsCpu },
-                { "playerVsPlayer", playerVsPlayer },
-                { "difficulty", difficulty }
+                { "symbolX", symbolX },
+                { "symbolY", symbolY },
+                { "p1Label", player1Symbol },
+                { "play", play }
             };
+        }
+
+        private string GetPlayer1Text()
+        {
+            return "Player 1: " + GameSettings.Player1.ToString();
         }
 
         public void Enter()
@@ -74,6 +97,8 @@ namespace Minimax.GameLogic.GameStates
                 entry.Value.Update(gameTime);
             }
 
+            player1Symbol.SetText(GetPlayer1Text());
+
             HandleButtons(Mouse.GetState());
         }
 
@@ -87,7 +112,7 @@ namespace Minimax.GameLogic.GameStates
 
                 if (gameObj.GetType() == typeof(Button))
                 {
-                   if (lastMouseState.LeftButton == ButtonState.Released && currentMouseState.LeftButton == ButtonState.Pressed)
+                    if (lastMouseState.LeftButton == ButtonState.Released && currentMouseState.LeftButton == ButtonState.Pressed)
                     {
                         Button button = (Button)gameObj;
 

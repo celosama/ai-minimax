@@ -43,8 +43,13 @@
     <Compile Include="Components\StateManagement\NullState.cs" />
     <Compile Include="Components\StateManagement\State.cs" />
     <Compile Include="Components\StateManagement\StateManager.cs" />
+    <Compile Include="GameLogic\Board.cs" />
     <Compile Include="GameLogic\Button.cs" />
+    <Compile Include="GameLogic\GameSettings.cs" />
+    <Compile Include="GameLogic\GameStates\ChooseSymbol.cs" />
     <Compile Include="GameLogic\GameStates\MainMenu.cs" />
+    <Compile Include="GameLogic\GameStates\PlayerVsCpu.cs" />
+    <Compile Include="GameLogic\Move.cs" />
     <Compile Include="TicTacToe.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
