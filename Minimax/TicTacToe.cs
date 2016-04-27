@@ -13,7 +13,7 @@ namespace Minimax
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        Texture2D texX, texO, texReset;
+        Texture2D texX, texO, texReset, lineTex;
         Button button;
         SpriteFont font;
 
@@ -59,16 +59,22 @@ namespace Minimax
             texO = Content.Load<Texture2D>("O");
             texReset = Content.Load<Texture2D>("Reset");
 
+            lineTex = new Texture2D(GraphicsDevice, 1, 1);
+            lineTex.SetData<Color>(
+                new Color[] { Color.Black }
+            );
+
             textures = new Dictionary<string, Texture2D>()
             {
                 { "X", texX },
                 { "O", texO },
                 { "Reset", texReset },
-                { "Button", texReset }
+                { "Line", lineTex }
             };
 
             ComponentLocator.RegisterTextures(textures);
             ComponentLocator.RegisterSpriteFonts(new Dictionary<string, SpriteFont>() { { "arial", font } });
+            ComponentLocator.RegisterGraphicsDeviceManager(graphics);
 
             stateManager.ChangeState(new MainMenu(stateManager));
         }
