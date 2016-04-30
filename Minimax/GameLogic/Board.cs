@@ -149,5 +149,15 @@ namespace Minimax.GameLogic
 
             return false;
         }
+
+        public void Reset()
+        {
+            board = new char[,]
+            {
+                { ' ', ' ', ' ' },
+                { ' ', ' ', ' ' },
+                { ' ', ' ', ' ' }
+            };
+        }
     }
 }
