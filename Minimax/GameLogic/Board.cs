@@ -12,7 +12,7 @@ namespace Minimax.GameLogic
 
         public enum State { PlayerXWins, PlayerOWins, Draw, Playing };
 
-        public Board(char[,] board = null)
+        public Board(char firstPlayer, char[,] board = null)
         {
             if (board == null)
                 this.board = new char[,]
@@ -23,6 +23,8 @@ namespace Minimax.GameLogic
                 };
             else
                 this.board = board;
+
+            currentPlayer = firstPlayer;
         }
 
         public char[,] GetBoard()
@@ -48,16 +50,41 @@ namespace Minimax.GameLogic
 
         public void MakeMove(Move move, char player)
         {
-            Point position = move.GetPosition();
+            if (IsGameOver())
+                return;
 
+            Point position = move.GetPosition();
+            
             board[position.X, position.Y] = player;
+
+            SwitchPlayerTurn();
+        }
+
+        private void SwitchPlayerTurn()
+        {
+            if (currentPlayer == 'X')
+                currentPlayer = 'O';
+            else
+                currentPlayer = 'X';
+        }
+
+        public Board MakeBoardWith(Move move, char player)
+        {
+            Board newBoard = new Board(player, (char[,])GetBoard().Clone());
+
+            newBoard.MakeMove(move, player);
+
+            return newBoard;
         }
 
         public float Evaluate(char player)
         {
-            float infinity = 1 / 0.0f;
+            if (VerifyWinFor(player))
+                return 1;
+            if (GetMoves().Count == 0)
+                return 0;
 
-            return infinity;
+            return -1;
         }
 
         public char CurrentPlayer()
@@ -67,10 +94,15 @@ namespace Minimax.GameLogic
 
         public bool IsGameOver()
         {
-            if (GetMoves().Count == 0)
+            if (GetGameState() == State.PlayerOWins ||
+                GetGameState() == State.PlayerXWins ||
+                GetGameState() == State.Draw)
+            {
                 return true;
+            }
 
             return false;
+
         }
 
         public State GetGameState()

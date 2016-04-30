@@ -6,6 +6,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Minimax.Components;
+using Microsoft.Xna.Framework.Input;
 
 namespace Minimax.GameLogic.GameStates
 {
@@ -13,17 +14,25 @@ namespace Minimax.GameLogic.GameStates
     {
         StateManager stateManager;
         Point screenCenter;
+        Dictionary<Point, Rectangle> boundingBoxes;
 
-        char human = GameSettings.Player1, cpu = GameSettings.Player2;
-        char currentTurn = GameSettings.FirstPlayer;
+        char human, cpu;
+        char currentTurn;
 
         Board board;
+
+        MouseState lastMouseState;
 
         public PlayerVsCpu(StateManager stateManager)
         {
             this.stateManager = stateManager;
+            human = GameSettings.Player1;
+            cpu = GameSettings.Player2;
 
-            board = new Board();
+            board = new Board(human);
+            boundingBoxes = new Dictionary<Point, Rectangle>();
+            lastMouseState = Mouse.GetState();
+            
         }
 
         private string GetPlayerTurnText()
@@ -35,10 +44,7 @@ namespace Minimax.GameLogic.GameStates
         {
             GraphicsDeviceManager graphics = ComponentLocator.FindGraphicsDeviceManager();
             screenCenter = new Point(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2);
-            board.MakeMove(new Move(new Point(0, 0)), human);
-            board.MakeMove(new Move(new Point(1, 1)), human);
-            board.MakeMove(new Move(new Point(2, 2)), human);
-            board.MakeMove(new Move(new Point(1, 2)), cpu);
+
         }
 
         public void Leave()
@@ -47,19 +53,90 @@ namespace Minimax.GameLogic.GameStates
 
         public void Update(GameTime gameTime)
         {
+            List<Move> moves = board.GetMoves();
+
+            foreach (Move move in moves)
+            {
+                Rectangle value;
+                bool found = boundingBoxes.TryGetValue(move.GetPosition(), out value);
+
+                if (!found)
+                {
+                    Point location = new Point(move.GetPosition().X, move.GetPosition().Y);
+
+                    Vector2 margin = new Vector2(screenCenter.X - (64 * 3 / 2), screenCenter.Y - (64 * 3 / 2));
+                    Vector2 position = new Vector2(64 * location.Y, 64 * location.X);
+                    Vector2 finalPosition = position + margin;
+
+                    boundingBoxes.Add(location, new Rectangle(finalPosition.ToPoint(), new Point(64, 64)));
+                }
+            }
+
+            checkMoves(Mouse.GetState());
+        }
+
+        private void updateClickableAreas(Move move)
+        {
+            boundingBoxes.Remove(move.GetPosition());
+        }
+
+        private void checkMoves(MouseState mouseState)
+        {
+            MouseState currentMouseState = mouseState;
+            Point mousePosition = new Point(currentMouseState.X, currentMouseState.Y);
+            Point removableKey = new Point();
+
+            if (board.CurrentPlayer() == human)
+            {
+                if (lastMouseState.LeftButton == ButtonState.Pressed && currentMouseState.LeftButton == ButtonState.Released)
+                {
+                    foreach (KeyValuePair<Point, Rectangle> boundingBox in boundingBoxes)
+                    {
+                        if (boundingBox.Value.Contains(mousePosition))
+                        {
+                            removableKey = boundingBox.Key;
+
+                            board.MakeMove(new Move(boundingBox.Key), human);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                MinimaxResult result = Minimax.Do(board, cpu, 8, 0);
+
+                Move move = result.GetMove();
+
+                board.MakeMove(move, cpu);
+            }
+
+            if (!removableKey.Equals(new Point())) {
+                boundingBoxes.Remove(removableKey);
+            }
+
+            lastMouseState = currentMouseState;
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
             spriteBatch.DrawString(ComponentLocator.FindFont("arial"), "Current Turn: " + GetPlayerTurnText(), new Vector2(10, 10), Color.White);
-            //drawLines(spriteBatch);
+            drawLines(spriteBatch);
             drawBoard(spriteBatch, board);
+            //drawDebug(spriteBatch);
+        }
+
+        private void drawDebug(SpriteBatch spriteBatch)
+        {
+            foreach (KeyValuePair<Point, Rectangle> boundingBox in boundingBoxes)
+            {
+                spriteBatch.Draw(ComponentLocator.FindTexture("Reset"), boundingBox.Value, Color.Red);
+            }
         }
 
         private void drawBoard(SpriteBatch spriteBatch, Board board)
         {
             char[,] nodes = board.GetBoard();
-            //Vector2 margin = new Vector2(304, 204);
+
             Vector2 margin = new Vector2(screenCenter.X - (64 * 3 / 2), screenCenter.Y - (64 * 3 / 2));
             Vector2 padding = new Vector2(2, 2);
 
@@ -81,26 +158,26 @@ namespace Minimax.GameLogic.GameStates
         {
             drawSingleLine(
                 spriteBatch,
-                new Vector2(screenCenter.X - 100, screenCenter.Y - 245),
-                new Vector2(screenCenter.X - 100, screenCenter.Y + 245)
+                new Vector2(screenCenter.X - 32, screenCenter.Y - 96),
+                new Vector2(screenCenter.X - 32, screenCenter.Y + 96)
             );
 
             drawSingleLine(
                 spriteBatch,
-                new Vector2(screenCenter.X + 100, screenCenter.Y - 245),
-                new Vector2(screenCenter.X + 100, screenCenter.Y + 245)
+                new Vector2(screenCenter.X + 32, screenCenter.Y - 96),
+                new Vector2(screenCenter.X + 32, screenCenter.Y + 96)
             );
 
             drawSingleLine(
                 spriteBatch,
-                new Vector2(screenCenter.X - 300, screenCenter.Y - 95),
-                new Vector2(screenCenter.X + 300, screenCenter.Y - 95)
+                new Vector2(screenCenter.X - 96, screenCenter.Y - 32),
+                new Vector2(screenCenter.X + 96, screenCenter.Y - 32)
             );
 
             drawSingleLine(
                 spriteBatch,
-                new Vector2(screenCenter.X - 300, screenCenter.Y + 95),
-                new Vector2(screenCenter.X + 300, screenCenter.Y + 95)
+                new Vector2(screenCenter.X - 96, screenCenter.Y + 32),
+                new Vector2(screenCenter.X + 96, screenCenter.Y + 32)
             );
         }
 
@@ -111,7 +188,7 @@ namespace Minimax.GameLogic.GameStates
 
             spriteBatch.Draw(
                 ComponentLocator.FindTexture("Line"),
-                new Rectangle((int)lineStart.X, (int)lineStart.Y, (int)edge.Length(), 5),
+                new Rectangle((int)lineStart.X, (int)lineStart.Y, (int)edge.Length(), 2),
                 null,
                 Color.Red,
                 angle,

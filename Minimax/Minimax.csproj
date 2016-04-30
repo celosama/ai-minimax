@@ -49,6 +49,7 @@
     <Compile Include="GameLogic\GameStates\ChooseSymbol.cs" />
     <Compile Include="GameLogic\GameStates\MainMenu.cs" />
     <Compile Include="GameLogic\GameStates\PlayerVsCpu.cs" />
+    <Compile Include="GameLogic\Minimax.cs" />
     <Compile Include="GameLogic\Move.cs" />
     <Compile Include="TicTacToe.cs" />
     <Compile Include="Program.cs" />

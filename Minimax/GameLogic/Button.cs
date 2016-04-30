@@ -23,7 +23,6 @@ namespace Minimax.GameLogic
         public void CalculateArea()
         {
             area = new Rectangle(position.ToPoint(), ComponentLocator.FindFont("arial").MeasureString(text).ToPoint());
-            Console.WriteLine(area);
         }
 
         public Rectangle GetArea()
