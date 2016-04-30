@@ -79,12 +79,16 @@ namespace Minimax.GameLogic
 
         public float Evaluate(char player)
         {
-            if (VerifyWinFor(player))
+            if ((player == 'X' && VerifyWinFor('X')) || (player == 'O' && VerifyWinFor('O')))
+            {
                 return 1;
-            if (GetMoves().Count == 0)
-                return 0;
-
-            return -1;
+            }
+            else if ((player == 'X' && VerifyWinFor('O')) || (player == 'O' && VerifyWinFor('X')))
+            {
+                return -1;
+            }
+                
+            return 0;
         }
 
         public char CurrentPlayer()

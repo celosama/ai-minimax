@@ -13,16 +13,15 @@ namespace Minimax.GameLogic
                 return new MinimaxResult(null, board.Evaluate(player));
 
             Move bestMove = default(Move);
-            float bestScore;
 
-            foreach (Move move in board.GetMoves())
+            if (board.CurrentPlayer() == player)
             {
-                Board newBoard = board.MakeBoardWith(move, player);
-                MinimaxResult result = Minimax.Do(newBoard, player, maxDepth, currentDepth + 1);
+                float bestScore = -1 / 0.0f;
 
-                if (board.CurrentPlayer() == player)
+                foreach (Move move in board.GetMoves())
                 {
-                    bestScore = -1 / 0.0f;
+                    Board newBoard = board.MakeBoardWith(move, player);
+                    MinimaxResult result = Minimax.Do(newBoard, player, maxDepth, currentDepth + 1);
 
                     if (result.GetScore() > bestScore)
                     {
@@ -30,9 +29,17 @@ namespace Minimax.GameLogic
                         bestMove = move;
                     }
                 }
-                else
+
+                return new MinimaxResult(bestMove, bestScore);
+            }
+            else
+            {
+                float bestScore = 1 / 0.0f;
+
+                foreach (Move move in board.GetMoves())
                 {
-                    bestScore = 1 / 0.0f;
+                    Board newBoard = board.MakeBoardWith(move, board.CurrentPlayer());
+                    MinimaxResult result = Minimax.Do(newBoard, newBoard.CurrentPlayer(), maxDepth, currentDepth + 1);
 
                     if (result.GetScore() < bestScore)
                     {
@@ -40,9 +47,9 @@ namespace Minimax.GameLogic
                         bestMove = move;
                     }
                 }
-            }
 
-            return new MinimaxResult(bestMove, board.Evaluate(player));
+                return new MinimaxResult(bestMove, bestScore);
+            }
         }
     }
 
