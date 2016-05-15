@@ -31,7 +31,7 @@ namespace Minimax.GameLogic.GameStates
             human = GameSettings.Player1;
             cpu = GameSettings.Player2;
 
-            board = new Board(human);
+            board = new Board((GameSettings.FirstPlayer == "Player") ? human : cpu);
             boundingBoxes = new Dictionary<Point, Rectangle>();
             lastMouseState = Mouse.GetState();
             currentTurn = board.CurrentPlayer();

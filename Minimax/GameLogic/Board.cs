@@ -8,6 +8,7 @@ namespace Minimax.GameLogic
     {
         char[,] board;
         char currentPlayer;
+        char whoStarted;
 
         public enum State { PlayerXWins, PlayerOWins, Draw, Playing };
 
@@ -24,6 +25,7 @@ namespace Minimax.GameLogic
                 this.board = board;
 
             currentPlayer = firstPlayer;
+            whoStarted = firstPlayer;
         }
 
         public char[,] GetBoard()
@@ -158,7 +160,7 @@ namespace Minimax.GameLogic
                 { ' ', ' ', ' ' }
             };
 
-            currentPlayer = GameSettings.Player1;
+            currentPlayer = whoStarted;
         }
     }
 }

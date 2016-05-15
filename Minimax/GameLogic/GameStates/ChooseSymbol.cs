@@ -14,7 +14,7 @@ namespace Minimax.GameLogic.GameStates
     {
         State gameMode;
 
-        Button symbolX, symbolY, player1Symbol, play;
+        Button symbolX, symbolY, player1Symbol, play, firstPlayer, player, cpu;
         Dictionary<string, GameObject> gameObjects;
         MouseState lastMouseState;
 
@@ -25,7 +25,12 @@ namespace Minimax.GameLogic.GameStates
             player1Symbol = new Button(100, 100, GetPlayer1Text());
             symbolX = new Button(100, 150, "X");
             symbolY = new Button(150, 150, "O");
-            play = new Button(100, 200, "Play");
+
+            firstPlayer = new Button(100, 200, WhoGoesFirst());
+            player = new Button(100, 250, "Player");
+            cpu = new Button(200, 250, "CPU");
+
+            play = new Button(100, 300, "Play");
 
             symbolX.Click = () =>
             {
@@ -37,6 +42,16 @@ namespace Minimax.GameLogic.GameStates
             {
                 GameSettings.Player1 = 'O';
                 GameSettings.Player2 = 'X';
+            };
+
+            player.Click = () =>
+            {
+                GameSettings.FirstPlayer = "Player";
+            };
+
+            cpu.Click = () =>
+            {
+                GameSettings.FirstPlayer = "CPU";
             };
 
             play.Click = () =>
@@ -53,8 +68,16 @@ namespace Minimax.GameLogic.GameStates
                 { "symbolX", symbolX },
                 { "symbolY", symbolY },
                 { "p1Label", player1Symbol },
+                { "firstPlayer", firstPlayer },
+                { "player", player },
+                { "cpu", cpu },
                 { "play", play }
             };
+        }
+
+        private string WhoGoesFirst()
+        {
+            return "Playing First: " + GameSettings.FirstPlayer.ToString();
         }
 
         private string GetPlayer1Text()
@@ -98,6 +121,7 @@ namespace Minimax.GameLogic.GameStates
             }
 
             player1Symbol.SetText(GetPlayer1Text());
+            firstPlayer.SetText(WhoGoesFirst());
 
             HandleButtons(Mouse.GetState());
         }
