@@ -14,7 +14,7 @@ namespace Minimax.GameLogic.GameStates
     {
         State gameMode;
 
-        Button symbolX, symbolY, player1Symbol, play, firstPlayer, player, cpu;
+        Button symbolX, symbolY, player1Symbol, play, firstPlayer, player, cpu, difficulty, normal, hard;
         Dictionary<string, GameObject> gameObjects;
         MouseState lastMouseState;
 
@@ -23,14 +23,18 @@ namespace Minimax.GameLogic.GameStates
             gameMode = nextState;
 
             player1Symbol = new Button(100, 100, GetPlayer1Text());
-            symbolX = new Button(100, 150, "X");
-            symbolY = new Button(150, 150, "O");
+            symbolX = new Button(100, 130, "X");
+            symbolY = new Button(150, 130, "O");
 
             firstPlayer = new Button(100, 200, WhoGoesFirst());
-            player = new Button(100, 250, "Player");
-            cpu = new Button(200, 250, "CPU");
+            player = new Button(100, 230, "Player");
+            cpu = new Button(200, 230, "CPU");
 
-            play = new Button(100, 300, "Play");
+            difficulty = new Button(100, 300, DifficultyText());
+            normal = new Button(100, 330, "Normal");
+            hard = new Button(200, 330, "Hard");
+
+            play = new Button(100, 430, "Play");
 
             symbolX.Click = () =>
             {
@@ -54,6 +58,16 @@ namespace Minimax.GameLogic.GameStates
                 GameSettings.FirstPlayer = "CPU";
             };
 
+            normal.Click = () =>
+            {
+                GameSettings.Difficulty = 4;
+            };
+
+            hard.Click = () =>
+            {
+                GameSettings.Difficulty = 8;
+            };
+
             play.Click = () =>
             {
                 State actualNextState = null;
@@ -71,8 +85,17 @@ namespace Minimax.GameLogic.GameStates
                 { "firstPlayer", firstPlayer },
                 { "player", player },
                 { "cpu", cpu },
+                { "difficulty", difficulty },
+                { "normal", normal },
+                { "hard", hard },
                 { "play", play }
             };
+        }
+
+        private string DifficultyText()
+        {
+            string text = (GameSettings.Difficulty == 8) ? "Hard" : "Normal";
+            return "Difficulty: " + text;
         }
 
         private string WhoGoesFirst()
@@ -122,6 +145,7 @@ namespace Minimax.GameLogic.GameStates
 
             player1Symbol.SetText(GetPlayer1Text());
             firstPlayer.SetText(WhoGoesFirst());
+            difficulty.SetText(DifficultyText());
 
             HandleButtons(Mouse.GetState());
         }

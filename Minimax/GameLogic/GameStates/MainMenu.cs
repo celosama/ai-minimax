@@ -19,7 +19,6 @@ namespace Minimax.GameLogic.GameStates
         {
             playerVsCpu = new Button(100, 100, "Player VS CPU");
             playerVsPlayer = new Button(100, 200, "Player VS Player");
-            difficulty = new Button(100, 300, "Difficulty");
 
             playerVsCpu.Click = () => {
                 stateManager.ChangeState(new ChooseSymbol(stateManager, new PlayerVsCpu(null)));
@@ -28,14 +27,9 @@ namespace Minimax.GameLogic.GameStates
             playerVsPlayer.Click = () => {
             };
 
-            difficulty.Click = () => {
-                stateManager.ChangeState(new NullState());
-            };
-
             gameObjects = new Dictionary<string, GameObject>() {
                 { "playerVsCpu", playerVsCpu },
-                { "playerVsPlayer", playerVsPlayer },
-                { "difficulty", difficulty }
+                { "playerVsPlayer", playerVsPlayer }
             };
         }
 

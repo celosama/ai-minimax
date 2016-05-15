@@ -124,7 +124,7 @@ namespace Minimax.GameLogic.GameStates
             }
             else
             {
-                MinimaxResult result = Minimax.Do(board, cpu, 8, 0);
+                MinimaxResult result = Minimax.Do(board, cpu, GameSettings.Difficulty, 0);
 
                 Move move = result.GetMove();
 

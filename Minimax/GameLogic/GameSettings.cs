@@ -10,6 +10,6 @@ namespace Minimax.GameLogic
         public static string FirstPlayer = "Player";
         public static char Player1 = 'X';
         public static char Player2 = 'O';
-        public static string Difficulty = "Normal";
+        public static int Difficulty = 8;
     }
 }
