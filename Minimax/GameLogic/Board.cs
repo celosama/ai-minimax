@@ -8,7 +8,6 @@ namespace Minimax.GameLogic
     {
         char[,] board;
         char currentPlayer;
-        bool isGameOver;
 
         public enum State { PlayerXWins, PlayerOWins, Draw, Playing };
 
@@ -158,6 +157,8 @@ namespace Minimax.GameLogic
                 { ' ', ' ', ' ' },
                 { ' ', ' ', ' ' }
             };
+
+            currentPlayer = GameSettings.Player1;
         }
     }
 }

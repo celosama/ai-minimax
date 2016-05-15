@@ -21,6 +21,8 @@ namespace Minimax.GameLogic.GameStates
 
         Board board;
 
+        Rectangle reset;
+
         MouseState lastMouseState;
 
         public PlayerVsCpu(StateManager stateManager)
@@ -32,7 +34,7 @@ namespace Minimax.GameLogic.GameStates
             board = new Board(human);
             boundingBoxes = new Dictionary<Point, Rectangle>();
             lastMouseState = Mouse.GetState();
-            
+            currentTurn = board.CurrentPlayer();
         }
 
         private string GetPlayerTurnText()
@@ -45,6 +47,7 @@ namespace Minimax.GameLogic.GameStates
             GraphicsDeviceManager graphics = ComponentLocator.FindGraphicsDeviceManager();
             screenCenter = new Point(graphics.PreferredBackBufferWidth / 2, graphics.PreferredBackBufferHeight / 2);
 
+            reset = new Rectangle(screenCenter.X * 2 - 128, screenCenter.Y * 2 - 128, 64, 64);
         }
 
         public void Leave()
@@ -54,6 +57,7 @@ namespace Minimax.GameLogic.GameStates
         public void Update(GameTime gameTime)
         {
             List<Move> moves = board.GetMoves();
+            boundingBoxes.Clear();
 
             foreach (Move move in moves)
             {
@@ -73,18 +77,29 @@ namespace Minimax.GameLogic.GameStates
             }
 
             checkMoves(Mouse.GetState());
+            checkReset(Mouse.GetState());
+
+            lastMouseState = Mouse.GetState();
         }
 
-        private void updateClickableAreas(Move move)
+        private void checkReset(MouseState mouseState)
         {
-            boundingBoxes.Remove(move.GetPosition());
+            MouseState currentMouseState = mouseState;
+
+            if (lastMouseState.LeftButton == ButtonState.Pressed && currentMouseState.LeftButton == ButtonState.Released)
+            {
+                if (reset.Contains(mouseState.X, mouseState.Y))
+                {
+                    board.Reset();
+                }
+            }
+
         }
 
         private void checkMoves(MouseState mouseState)
         {
             MouseState currentMouseState = mouseState;
             Point mousePosition = new Point(currentMouseState.X, currentMouseState.Y);
-            Point removableKey = new Point();
 
             if (board.CurrentPlayer() == human)
             {
@@ -94,8 +109,6 @@ namespace Minimax.GameLogic.GameStates
                     {
                         if (boundingBox.Value.Contains(mousePosition))
                         {
-                            removableKey = boundingBox.Key;
-
                             board.MakeMove(new Move(boundingBox.Key), human);
                         }
                     }
@@ -110,18 +123,33 @@ namespace Minimax.GameLogic.GameStates
                 board.MakeMove(move, cpu);
             }
 
-            if (!removableKey.Equals(new Point())) {
-                boundingBoxes.Remove(removableKey);
-            }
-
-            lastMouseState = currentMouseState;
+            currentTurn = board.CurrentPlayer();
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
-            spriteBatch.DrawString(ComponentLocator.FindFont("arial"), "Current Turn: " + GetPlayerTurnText(), new Vector2(10, 10), Color.White);
+            if (!board.IsGameOver())
+                spriteBatch.DrawString(ComponentLocator.FindFont("arial"), "Current Turn: " + GetPlayerTurnText(), new Vector2(10, 10), Color.White);
+            else
+            {
+                string text = "";
+
+                if (board.GetGameState() == Board.State.Draw)
+                    text = "Draw";
+                else if (board.GetGameState() == Board.State.PlayerXWins)
+                    text = "Player X Wins";
+                else if (board.GetGameState() == Board.State.PlayerOWins)
+                    text = "Player O Wins";
+
+                Point textSize = ComponentLocator.FindFont("arial").MeasureString(text).ToPoint();
+                Point position = new Point(screenCenter.X, screenCenter.Y) - textSize / new Point(2, 2) + new Point(0, -150);
+                spriteBatch.DrawString(ComponentLocator.FindFont("arial"), text, position.ToVector2(), Color.White);
+            }
+
             drawLines(spriteBatch);
             drawBoard(spriteBatch, board);
+
+            spriteBatch.Draw(ComponentLocator.FindTexture("Reset"), reset, Color.White);
             //drawDebug(spriteBatch);
         }
 
