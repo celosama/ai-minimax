@@ -57,6 +57,14 @@ namespace Minimax.GameLogic.GameStates
         public void Update(GameTime gameTime)
         {
             List<Move> moves = board.GetMoves();
+
+            if (moves.Count == 9 && board.CurrentPlayer() == GameSettings.Player2)
+            {
+                Random rand = new Random();
+                Move randomMove = new Move(new Point(rand.Next(0, 2), rand.Next(0, 2)));
+                board.MakeMove(randomMove, GameSettings.Player2);
+            }
+
             boundingBoxes.Clear();
 
             foreach (Move move in moves)
